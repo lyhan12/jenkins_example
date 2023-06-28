@@ -37,7 +37,9 @@ pipeline {
                         configName: "remote_server",
                         verbose: true,
                         transfers: [
-                            sshTransfer(execCommand: "hostname -I"),
+                            sshTransfer(execCommand: "docker pull lyhan12/jenkins_example"),
+                            sshTransfer(execCommand: "docker rm server"),
+                            sshTransfer(execCommand: "docker run --name server lyhan12/jenkins_example")
 //                            sshTransfer(sourceFiles: "helm/**",)
                         ]
                     )
