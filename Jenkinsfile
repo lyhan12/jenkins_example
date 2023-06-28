@@ -28,6 +28,23 @@ pipeline {
                 sh 'docker logout'
             }
         }
+        stage('SSH transfer') {
+        steps([$class: 'BapSshPromotionPublisherPlugin']) {
+            sshPublisher(
+                continueOnError: false, failOnError: true,
+                publishers: [
+                    sshPublisherDesc(
+                        configName: "remote_server",
+                        verbose: true,
+                        transfers: [
+                            sshTransfer(execCommand: "hostname -I"),
+//                            sshTransfer(sourceFiles: "helm/**",)
+                        ]
+                    )
+                ]
+            )
+        }
+    }
     }
     post {
         success {
