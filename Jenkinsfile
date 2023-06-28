@@ -1,20 +1,39 @@
 pipeline {
     agent any
+    environment {
+        DOCKERHUB = credentials("dockerhub")
+        
+    }
     stages {
-        stage('build') {
+        stage('Check Out') {
             steps {
-                echo 'building the application...'
+                echo 'check out'
+                git branch: 'main',
+                    credentialsId: 'github', // For Private Repository
+                    url: 'https://github.com/lyhan12/jenkins_example'
             }
         }
-        stage('test') {
+        stage('Docker Build') {
             steps {
-                echo 'testing the application...'
+                sh 'docker build -t jenkins_example .'
             }
         }
-        stage('deploy') {
+        stage('Docker Upload') {
             steps {
-                echo 'deploying the application...'
+                echo "upload"
+                
+                sh 'docker login -u $DOCKERHUB_USR -p $DOCKERHUB_PSW'
+                sh 'docker tag jenkins_example lyhan12/jenkins_example'
+                sh 'docker push lyhan12/jenkins_example'
+                sh 'docker logout'
             }
+        }
+    }
+    post {
+        success {
+            slackSend(
+                channel: '#일반',
+                message: "${env.BUILD_NUMBER} ${env.JOB_NAME}")
         }
     }
 }
