@@ -38,7 +38,8 @@ pipeline {
                         verbose: true,
                         transfers: [
                             sshTransfer(execCommand: "docker pull lyhan12/jenkins_example"),
-                            sshTransfer(execCommand: "docker rm server"),
+                            sshTransfer(execCommand: "docker ps -aq --filter 'name=server' | xargs -r docker stop"),
+                            sshTransfer(execCommand: "docker ps -aq --filter 'name=server' | xargs -r docker rm"),
                             sshTransfer(execCommand: "docker run --name server lyhan12/jenkins_example")
 //                            sshTransfer(sourceFiles: "helm/**",)
                         ]
